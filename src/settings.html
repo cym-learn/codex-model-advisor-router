@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>路由设置 · Codex Model Advisor</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/settings.css">
+  <script src="/settings-client.js" defer></script>
+</head>
+<body>
+<main>
+  <header><div><a href="/">← 请求与完成记录</a><h1>路由设置</h1><p>Jev 选择配置，GPT 回答和执行。</p></div><button id="refresh" type="button">刷新状态</button></header>
+  <p id="status" role="status" aria-live="polite">正在连接本地控制器…</p>
+  <p id="notice" role="status" aria-live="polite"></p>
+  <section aria-labelledby="key-title">
+    <h2 id="key-title">1. 配置密钥</h2>
+    <p id="credential-state">密钥状态未知</p>
+    <p>在本机密码窗口填写密钥；本网页不接收、显示或保存密钥明文。</p>
+    <button id="key-setup" type="button" disabled>打开本机密钥窗口</button>
+  </section>
+  <section aria-labelledby="brief-title">
+    <h2 id="brief-title">2. 添加项目摘要 <span class="muted">可选，默认关闭</span></h2>
+    <p>由你填写技术栈、任务范围、可用文件和检查方式。不会自动扫描源码或项目历史。只在匹配的项目或对话中使用。</p>
+    <p>项目摘要适用于该路径及子目录，更具体的项目路径优先；指定对话的摘要优先于项目摘要。关闭会保留停用登记，删除登记后可能重新采用匹配的项目摘要。</p>
+    <form id="brief-form">
+      <div class="fields">
+        <label>应用范围<select id="brief-scope"><option value="project">项目路径</option><option value="thread">指定对话</option></select></label>
+        <label><span id="target-label">项目完整路径（每行一个，含子目录）</span><textarea id="brief-target" rows="3" autocomplete="off" required placeholder="C:\Projects\frontend&#10;D:\Projects\backend"></textarea><datalist id="targets"></datalist></label>
+      </div>
+      <p class="muted">一个或多个文件夹均可，每行一个完整路径。这些文件夹共用下方摘要，统一修改、关闭或删除登记；不会读取文件夹内容。</p>
+      <label for="brief-text">摘要内容（最多 2,000 字符）</label>
+      <textarea id="brief-text" rows="6" maxlength="2000" required placeholder="例如：这是一个 JavaScript 小项目。任务是修复文件处理功能；可查看 README.md 和 src；检查方式为 npm test。"></textarea>
+      <p id="brief-count" class="muted">0 / 2,000 字符</p>
+      <h3>将发送给 Jev 的摘要原文</h3>
+      <pre id="brief-preview" class="preview">尚未填写摘要</pre>
+      <p class="muted">这是摘要部分的完整预览。选型时还会发送当前任务文字和必要路由信息；摘要计入总计 16,000 字符的外发限制。不要填密钥、个人敏感信息或无需外发的内容。</p>
+      <label class="check"><input id="brief-consent" type="checkbox">我确认上方范围和原文，同意将此摘要发送给 Jev 用于选型。</label>
+      <div class="actions"><button id="brief-save" type="submit" disabled>保存并启用摘要</button><button id="brief-reset" type="button">清空编辑</button></div>
+      <p class="muted">编辑不会自动保存；修改后需重新勾选授权并保存。已有摘要在新版本保存前仍按服务端记录生效。</p>
+    </form>
+    <h3>已保存的摘要</h3><div id="brief-list">尚未加载</div>
+  </section>
+  <section aria-labelledby="mode-title">
+    <h2 id="mode-title">3. 选择路由模式</h2>
+    <p id="mode-state">当前模式未知</p>
+    <label for="mode">模式</label>
+    <select id="mode"><option value="auto">Jev 自动选择</option><option value="shadow">Jev 只建议</option><option value="rules" selected>固定规则</option></select>
+    <p>自动模式由 Jev 选择模型与推理强度；只建议模式不应用建议。Jev 放弃或失败时保留传入配置。</p>
+    <label class="check"><input id="routing-consent" type="checkbox">我同意将任务文字、必要路由信息及已启用的匹配摘要发送给 Jev，并按所选模式使用建议。</label>
+    <p id="mode-requirements" class="muted"></p>
+    <button id="mode-save" type="button" disabled>应用模式</button>
+  </section>
+  <section aria-labelledby="connection-title">
+    <h2 id="connection-title">4. 确认配置与连接</h2>
+    <p id="baseline">控制器基准配置未知</p>
+    <p>验证前，请确认专用测试对话的原配置为 <strong>GPT-6 Sol / high</strong>。这里的控制器基准不等于 Desktop 输入框已选配置。</p>
+    <p>连接检查由你主动触发一次，可能调用 Jev；不会自动重试。是否实际执行某个 GPT 配置，请查看状态页的服务端完成配置及最终消息记录。</p>
+    <div class="actions"><button id="check-connection" type="button" disabled>检查一次连接</button><button id="show-widget" type="button" disabled>显示状态小窗</button></div>
+    <p id="connection-result" role="status" aria-live="polite">尚未检查连接；配置存在不代表链路已经验证。</p>
+    <p id="trial-state" class="muted"></p>
+  </section>
+  <footer>设置仅作用于本地控制器。连接、选型建议和实际完成配置是不同证据。</footer>
+</main>
+</body>
+</html>

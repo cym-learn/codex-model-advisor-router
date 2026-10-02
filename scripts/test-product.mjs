@@ -1,0 +1,10 @@
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const manifest=JSON.parse(readFileSync(new URL('../release-files.json',import.meta.url),'utf8'));
+const tests=manifest.sourceOnly.filter(path=>path.startsWith('test/')&&path.endsWith('.test.mjs'));
+if(!tests.length)throw Error('Product test list is empty');
+const result=spawnSync(process.execPath,['--test','--test-concurrency=1',...tests],{cwd:root,stdio:'inherit',env:process.env});
+if(result.error)throw result.error;
+process.exit(result.status??1);
