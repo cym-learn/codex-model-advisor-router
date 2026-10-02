@@ -15,7 +15,8 @@ test('multiple roots share one summary, edits replace the group and invalid root
  save(dir,'project',`${a}\r\n\n${b}\n${a}`,'shared context');
  let entries=projectContexts(dir).entries;assert.equal(entries.length,1);assert.equal(entries[0].target.split('\n').length,2);
  const first=resolveProjectContext(dir,'one',join(a,'src'));
- assert.equal(first.text,'shared context',JSON.stringify({reason:first.reason,scope:entries[0].scope,enabled:entries[0].enabled,consent:entries[0].consentToSendSummary,rootAbsolute:!!projectKey(entries[0].target.split('\n')[0]),cwdAbsolute:!!projectKey(join(a,'src')),pathPrefixMatches:projectKey(join(a,'src'))?.startsWith(projectKey(entries[0].target.split('\n')[0])+'\\')||false}));
+ const rootKey=projectKey(entries[0].target.split('\n')[0]),cwdKey=projectKey(join(a,'src'));
+ assert.equal(first.text,'shared context',JSON.stringify({reason:first.reason,scope:entries[0].scope,enabled:entries[0].enabled,consent:entries[0].consentToSendSummary,rootLength:rootKey?.length,cwdLength:cwdKey?.length,rootPrefix:cwdKey?.startsWith(rootKey),separatorCode:cwdKey?.charCodeAt(rootKey?.length??0),sameDrive:rootKey?.slice(0,2)===cwdKey?.slice(0,2)}));
  assert.equal(resolveProjectContext(dir,'two',join(b,'src')).text,'shared context');
  const before=JSON.stringify(entries);
  assert.throws(()=>save(dir,'project',`${c}\n${join(dir,'missing')}`,'bad'));
