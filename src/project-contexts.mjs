@@ -8,7 +8,16 @@ import {projectBriefState083} from './research-083.mjs';
 export function projectKey(path){
  if(typeof path!=='string'||!path.trim())return null;
  let p=path.trim().replace(/^\\\\\?\\UNC\\/i,'\\\\').replace(/^\\\\\?\\/,'');
- if(win32.isAbsolute(p)){const normalized=win32.normalize(p).toLowerCase();return /^[a-z]:\\$/.test(normalized)?normalized:normalized.replace(/[\\/]+$/,'');}
+ if(win32.isAbsolute(p)){
+  const normalized=win32.normalize(p).toLowerCase();
+  let cursor=normalized;const suffix=[];
+  while(!existsSync(cursor)){
+   const parent=win32.dirname(cursor);if(parent===cursor) return /^[a-z]:\\$/.test(normalized)?normalized:normalized.replace(/[\\/]+$/,'');
+   suffix.unshift(win32.basename(cursor));cursor=parent;
+  }
+  try{return win32.normalize(join(realpathSync.native(cursor),...suffix)).toLowerCase();}
+  catch{return /^[a-z]:\\$/.test(normalized)?normalized:normalized.replace(/[\\/]+$/,'');}
+ }
  if(p.startsWith('/'))return resolve(p).replace(/\/+$/,'');
  return null;
 }
