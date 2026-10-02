@@ -14,7 +14,8 @@ test('multiple roots share one summary, edits replace the group and invalid root
  const dir=fixture(t),a=join(dir,'front'),b=join(dir,'back'),c=join(dir,'docs');for(const p of [a,b,c])mkdirSync(p);
  save(dir,'project',`${a}\r\n\n${b}\n${a}`,'shared context');
  let entries=projectContexts(dir).entries;assert.equal(entries.length,1);assert.equal(entries[0].target.split('\n').length,2);
- assert.equal(resolveProjectContext(dir,'one',join(a,'src')).text,'shared context');
+ const first=resolveProjectContext(dir,'one',join(a,'src'));
+ assert.equal(first.text,'shared context',JSON.stringify({reason:first.reason,scope:entries[0].scope,enabled:entries[0].enabled,consent:entries[0].consentToSendSummary,rootAbsolute:!!projectKey(entries[0].target.split('\n')[0]),cwdAbsolute:!!projectKey(join(a,'src')),pathPrefixMatches:projectKey(join(a,'src'))?.startsWith(projectKey(entries[0].target.split('\n')[0])+'\\')||false}));
  assert.equal(resolveProjectContext(dir,'two',join(b,'src')).text,'shared context');
  const before=JSON.stringify(entries);
  assert.throws(()=>save(dir,'project',`${c}\n${join(dir,'missing')}`,'bad'));
