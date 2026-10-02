@@ -22,9 +22,16 @@ try {
  for($i=0;$i -lt 50;$i++){$process.Refresh();if($process.MainWindowHandle -ne 0){break};Start-Sleep -Milliseconds 100}
  if($process.MainWindowHandle -eq 0){throw 'Initial widget did not become visible'}
  if(-not(Send-WidgetCommand $area Hide)){throw 'Hide signal missing'}
- for($i=0;$i -lt 30;$i++){Start-Sleep -Milliseconds 100;$process.Refresh();if($process.MainWindowHandle -eq 0){break}}
+ $saved=$false
+ for($i=0;$i -lt 30;$i++){
+  Start-Sleep -Milliseconds 100;$process.Refresh()
+  try{$prefs=Get-Content -LiteralPath (Join-Path $area 'widget-state.json') -Raw|ConvertFrom-Json;$saved=$prefs.PSObject.Properties.Name -contains 'topmost'}catch{$saved=$false}
+  # Startup also hides the window; wait for the Hide command to save preferences.
+  if($process.MainWindowHandle -eq 0 -and $saved){break}
+ }
  $process.Refresh();if($process.HasExited){throw 'Hide killed widget'}
  if($process.MainWindowHandle -ne 0){throw 'Hide left visible window'}
+ if(-not $saved){throw 'Hide did not save preferences'}
  $prefs=Get-Content -LiteralPath (Join-Path $area 'widget-state.json') -Raw|ConvertFrom-Json
  if($prefs.sizes.expanded.width -ne 460 -or $prefs.sizes.compact.width -ne 370){throw 'Mode sizes lost'}
  if($prefs.left -gt 10000){throw 'Offscreen window not recovered'}
