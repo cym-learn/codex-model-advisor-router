@@ -16,8 +16,7 @@ test('multiple roots share one summary, edits replace the group and invalid root
  let entries=projectContexts(dir).entries;assert.equal(entries.length,1);assert.equal(entries[0].target.split('\n').length,2);
  const first=resolveProjectContext(dir,'one',join(a,'src'));
  const rootKey=projectKey(entries[0].target.split('\n')[0]),cwdKey=projectKey(join(a,'src'));
- let common=0;while(common<Math.min(rootKey?.length??0,cwdKey?.length??0)&&rootKey[common]===cwdKey[common])common++;
- assert.equal(first.text,'shared context',JSON.stringify({reason:first.reason,rootLength:rootKey?.length,cwdLength:cwdKey?.length,commonPrefixLength:common,rootDiffCode:rootKey?.charCodeAt(common),cwdDiffCode:cwdKey?.charCodeAt(common),sameDrive:rootKey?.slice(0,2)===cwdKey?.slice(0,2)}));
+ assert.equal(first.text,'shared context',`Project summary was not inherited (${first.reason})`);
  assert.equal(resolveProjectContext(dir,'two',join(b,'src')).text,'shared context');
  const before=JSON.stringify(entries);
  assert.throws(()=>save(dir,'project',`${c}\n${join(dir,'missing')}`,'bad'));
